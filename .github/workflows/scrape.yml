@@ -1,0 +1,23 @@
+name: scrape
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+jobs:
+  scrape_and_email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install all necessary packages
+        run: pip install requests beautifulsoup4 pandas sendgrid
+      - name: Run the scraping script and send email
+        run: python cheeseboard-scraper.py
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
